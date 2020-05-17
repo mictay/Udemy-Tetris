@@ -19,23 +19,62 @@ public class Board : MonoBehaviour
     [SerializeField]
     public Transform[,] m_grid;
 
+    /*****************************************************
+     *
+     */
     void Awake()
     {
         m_grid = new Transform[m_width, m_height];
     }
 
-    // Start is called before the first frame update
+    /*****************************************************
+     *  Start is called before the first frame update
+     */
     void Start()
     {
         DrawEmptyCells();
     }
 
-    // Update is called once per frame
+    /*****************************************************
+     *Update is called once per frame
+     */
     void Update()
     {
         
     }
 
+    /*****************************************************
+     *
+     */
+    bool IsWithinBoard(int x, int y)
+    {
+        return (x >= 0 && x < m_width && y >= 0);
+    }
+
+    /*****************************************************
+     *
+     */
+    public bool IsValidPosition(Shape shape)
+    {
+        bool ret = true;
+
+        //loop through each shape, ensure they are all valid
+        foreach(Transform child in shape.transform)
+        {
+            Vector2 pos = Vectorf.Round(child.position);
+
+            if (!IsWithinBoard((int)pos.x, (int)pos.y)) {
+                return false;
+            }
+
+        }
+
+        return ret;
+    }
+
+    /*****************************************************
+     *
+     */
     void DrawEmptyCells()
     {
         
