@@ -34,6 +34,8 @@ public class GameController : MonoBehaviour
 
     public GameObject m_gameOverPanel;
 
+    SoundManager m_soundManager;
+
     /********************************************************************************
      * 
      */
@@ -41,9 +43,10 @@ public class GameController : MonoBehaviour
     {
         m_gameBoard = GameObject.FindWithTag("Board").GetComponent<Board>();
         m_spawner = GameObject.FindWithTag("Spawner").GetComponent<Spawner>();
+        m_soundManager = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
 
-        if (!m_gameBoard || !m_spawner)
-            Debug.Log("WARNING!  Board or Spawner is null");
+        if (!m_gameBoard || !m_spawner || !m_soundManager)
+            Debug.Log("WARNING!  GameBoard, Spawner, or SoundManager is null");
 
         m_spawner.transform.position = Vectorf.Round(m_spawner.transform.position);
 
@@ -99,6 +102,10 @@ public class GameController : MonoBehaviour
             if (!m_gameBoard.IsValidPosition(m_activeShape))
             {
                 m_activeShape.MoveLeft();
+                PlaySound(m_soundManager.m_errorSound, 0.5f);
+            } else
+            {
+                PlaySound(m_soundManager.m_moveSound, 0.5f);
             }
 
         }
@@ -110,6 +117,11 @@ public class GameController : MonoBehaviour
             if (!m_gameBoard.IsValidPosition(m_activeShape))
             {
                 m_activeShape.MoveRight();
+                PlaySound(m_soundManager.m_errorSound, 0.5f);
+            }
+            else
+            {
+                PlaySound(m_soundManager.m_moveSound, 0.5f);
             }
 
         }
@@ -121,6 +133,11 @@ public class GameController : MonoBehaviour
             if (!m_gameBoard.IsValidPosition(m_activeShape))
             {
                 m_activeShape.RotateRight();
+                PlaySound(m_soundManager.m_errorSound, 0.5f);
+            }
+            else
+            {
+                PlaySound(m_soundManager.m_moveSound, 0.5f);
             }
 
         }
@@ -132,6 +149,11 @@ public class GameController : MonoBehaviour
             if (!m_gameBoard.IsValidPosition(m_activeShape))
             {
                 m_activeShape.RotateLeft();
+                PlaySound(m_soundManager.m_errorSound, 0.5f);
+            }
+            else
+            {
+                PlaySound(m_soundManager.m_moveSound, 0.5f);
             }
 
         }
@@ -148,7 +170,7 @@ public class GameController : MonoBehaviour
                 {
                     if(m_gameBoard.IsOverLimit(m_activeShape))
                     {
-                        GamveOver();
+                        GameOver();
                     }
                     else
                     {
@@ -166,7 +188,7 @@ public class GameController : MonoBehaviour
     /********************************************************************************
      * 
      */
-    private void GamveOver()
+    private void GameOver()
     {
         m_activeShape.MoveUp();
         m_isGameOver = true;
@@ -232,6 +254,15 @@ public class GameController : MonoBehaviour
         else
         {
             Debug.LogWarning("LoadLevel Error: invalid scene specified!");
+        }
+    }
+
+    // plays a sound with an option volume multiplier
+    void PlaySound(AudioClip clip, float volMultiplier = 1.0f)
+    {
+        if (m_soundManager.m_fxEnabled && clip)
+        {
+            AudioSource.PlayClipAtPoint(clip, Camera.main.transform.position, Mathf.Clamp(m_soundManager.m_fxVolume * volMultiplier, 0.05f, 1f));
         }
     }
 
